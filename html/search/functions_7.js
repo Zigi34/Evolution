@@ -1,0 +1,5 @@
+var searchData=
+[
+  ['optimizealgorithm',['OptimizeAlgorithm',['../classorg_1_1evolution_1_1algorithm_1_1_optimize_algorithm.html#ae7e98a86d7f38d7162328e71817a2f5a',1,'org.evolution.algorithm.OptimizeAlgorithm.OptimizeAlgorithm(ObjectiveFunction&lt; T &gt; objectiveFunction, SolutionSpace&lt; T &gt; solutionSpace)'],['../classorg_1_1evolution_1_1algorithm_1_1_optimize_algorithm.html#a8923bbc17e46038fec38b5912d2252f0',1,'org.evolution.algorithm.OptimizeAlgorithm.OptimizeAlgorithm()']]],
+  ['optimizealgorithmstate',['OptimizeAlgorithmState',['../classorg_1_1evolution_1_1algorithm_1_1state_1_1_optimize_algorithm_state.html#ad8a000b2540b6a7395907958509b0074',1,'org.evolution.algorithm.state.OptimizeAlgorithmState.OptimizeAlgorithmState(OptimizeAlgorithm&lt;?&gt; algorithm)'],['../classorg_1_1evolution_1_1algorithm_1_1state_1_1_optimize_algorithm_state.html#aab68634cf42bac263f04eda00f49b817',1,'org.evolution.algorithm.state.OptimizeAlgorithmState.OptimizeAlgorithmState(OptimizeAlgorithm&lt;?&gt; algorithm, int state)']]]
+];
