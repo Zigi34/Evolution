@@ -12,9 +12,9 @@ import org.evolution.function.objective.ObjectiveFunction;
 import org.evolution.solution.Solution;
 import org.evolution.solution.space.SolutionSpace;
 
-public class Population implements Collection<Solution>, List<Solution> {
+public class Population<T extends Solution> implements Collection<T>, List<T> {
 
-	private List<Solution> values = new LinkedList<Solution>();
+	private List<T> values = new LinkedList<T>();
 
 	/**
 	 * Evaluate and sort population from fitness evaluation individual
@@ -25,15 +25,13 @@ public class Population implements Collection<Solution>, List<Solution> {
 	 *            objective function
 	 */
 	public static void sortPopulation(List<Solution> solutions,
-			ObjectiveFunction<Solution> function) {
-		// Seřazení řešení podle fitness od nejlepšího po nejhorší
+			final ObjectiveFunction<Solution> function) {
 		Collections.sort(solutions, new Comparator<Solution>() {
 			public int compare(Solution o1, Solution o2) {
 				double f1 = function.getFunctionValue(o1);
 				double f2 = function.getFunctionValue(o2);
 				if (f1 > f2)
-					return -1; // protože řadíme sestupně a ne vzestupně
-								// (default)
+					return -1; // proto, �e �ad�me sestupn� a ne vzestupn�
 				else if (f1 == f2)
 					return 0;
 				else
@@ -50,20 +48,20 @@ public class Population implements Collection<Solution>, List<Solution> {
 	 * @param function
 	 *            objective function
 	 */
-	public static void sortPopulation(Population population,
+	public static void sortPopulation(Population<Solution> population,
 			ObjectiveFunction<Solution> function) {
 		sortPopulation(population.getParameters(), function);
 	}
 
-	public static Population createRandomPopulation(int count,
+	public static Population<Solution> createRandomPopulation(int count,
 			SolutionSpace<Solution> space) {
-		Population pop = new Population();
+		Population<Solution> pop = new Population<Solution>();
 		for (int i = 0; i < count; i++)
 			pop.add(space.getRandomSolution());
 		return pop;
 	}
 
-	public List<Solution> getParameters() {
+	public List<T> getParameters() {
 		return values;
 	}
 
@@ -83,7 +81,7 @@ public class Population implements Collection<Solution>, List<Solution> {
 	}
 
 	@Override
-	public Iterator<Solution> iterator() {
+	public Iterator<T> iterator() {
 		return values.iterator();
 	}
 
@@ -98,7 +96,7 @@ public class Population implements Collection<Solution>, List<Solution> {
 	}
 
 	@Override
-	public boolean add(Solution e) {
+	public boolean add(T e) {
 		return values.add(e);
 	}
 
@@ -110,11 +108,6 @@ public class Population implements Collection<Solution>, List<Solution> {
 	@Override
 	public boolean containsAll(Collection<?> c) {
 		return values.containsAll(c);
-	}
-
-	@Override
-	public boolean addAll(Collection<? extends Solution> c) {
-		return values.addAll(c);
 	}
 
 	@Override
@@ -133,27 +126,22 @@ public class Population implements Collection<Solution>, List<Solution> {
 	}
 
 	@Override
-	public boolean addAll(int index, Collection<? extends Solution> c) {
-		return values.addAll(index, c);
-	}
-
-	@Override
-	public Solution get(int index) {
+	public T get(int index) {
 		return values.get(index);
 	}
 
 	@Override
-	public Solution set(int index, Solution element) {
+	public T set(int index, T element) {
 		return values.set(index, element);
 	}
 
 	@Override
-	public void add(int index, Solution element) {
+	public void add(int index, T element) {
 		values.add(index, element);
 	}
 
 	@Override
-	public Solution remove(int index) {
+	public T remove(int index) {
 		return values.remove(index);
 	}
 
@@ -168,17 +156,29 @@ public class Population implements Collection<Solution>, List<Solution> {
 	}
 
 	@Override
-	public ListIterator<Solution> listIterator() {
+	public ListIterator<T> listIterator() {
 		return values.listIterator();
 	}
 
 	@Override
-	public ListIterator<Solution> listIterator(int index) {
+	public ListIterator<T> listIterator(int index) {
 		return values.listIterator(index);
 	}
 
 	@Override
-	public List<Solution> subList(int fromIndex, int toIndex) {
+	public List<T> subList(int fromIndex, int toIndex) {
 		return values.subList(fromIndex, toIndex);
+	}
+
+	@Override
+	public boolean addAll(int index, Collection<? extends T> c) {
+		values.addAll(index, c);
+		return false;
+	}
+
+	@Override
+	public boolean addAll(Collection<? extends T> c) {
+		values.addAll(c);
+		return true;
 	}
 }

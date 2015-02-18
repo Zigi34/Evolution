@@ -3,6 +3,7 @@ package org.evolution.algorithm;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.evolution.algorithm.population.Population;
 import org.evolution.algorithm.state.OptimizeAlgorithmState;
 import org.evolution.algorithm.state.OptimizeAlgorithmStateListener;
 import org.evolution.function.objective.ObjectiveFunction;
@@ -12,7 +13,7 @@ import org.evolution.solution.space.SolutionSpace;
 /**
  * Basic class for all optimize algorithm.
  * 
- * @author Zden�k Gold
+ * @author Zdenek Gold
  *
  * @param <T>
  *            generic type of optimized solution
@@ -31,6 +32,11 @@ public abstract class OptimizeAlgorithm<T extends Solution> implements Runnable 
 	 */
 	private List<OptimizeAlgorithmStateListener> states = new LinkedList<OptimizeAlgorithmStateListener>();
 	private OptimizeAlgorithmState currentState;
+
+	/**
+	 * Population of solutions in this generation
+	 */
+	private Population population;
 	/**
 	 * actual best solution of searching in solution space
 	 */
@@ -129,65 +135,140 @@ public abstract class OptimizeAlgorithm<T extends Solution> implements Runnable 
 		return maxIteration;
 	}
 
+	/**
+	 * Set maximum iteration
+	 * 
+	 * @param maxIteration
+	 */
 	public void setMaxIteration(int maxIteration) {
 		this.maxIteration = maxIteration;
 	}
 
+	/**
+	 * Return initial solution
+	 * 
+	 * @return
+	 */
 	public Solution getInitialSolution() {
 		return initialSolution;
 	}
 
+	/**
+	 * Set initialized solution
+	 * 
+	 * @param initialSolution
+	 */
 	public void setInitialSolution(T initialSolution) {
 		this.initialSolution = initialSolution;
 	}
 
+	/**
+	 * Return best solution for this generation
+	 * 
+	 * @return
+	 */
 	public T getBestSolution() {
 		return bestSolution;
 	}
 
-	/* BEST SOLUTION */
+	/**
+	 * Set this solution as best of found solution in problem
+	 * 
+	 * @param best
+	 *            best solution instance
+	 */
 	public void setBestSolution(T best) {
 		try {
 			this.bestSolution = best;
-			fireStateListener(OptimizeAlgorithmState.createState(
-					OptimizeAlgorithmState.NEW_BEST_SOLUTION, this));
+			fireStateListener(OptimizeAlgorithmState.NEW_BEST_SOLUTION);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	/* LISTENERS */
-	public void addStateListener(
-			OptimizeAlgorithmStateListener<OptimizeAlgorithmState> listener) {
+	public Population getPopulation() {
+		return population;
+	}
+
+	public void setPopulation(Population population) {
+		this.population = population;
+	}
+
+	/**
+	 * Add new listener, to react on updates of this instance
+	 * 
+	 * @param listener
+	 */
+	public void addStateListener(OptimizeAlgorithmStateListener listener) {
 		if (listener != null && !states.contains(listener))
 			states.add(listener);
 	}
 
-	public void removeStateListener(
-			OptimizeAlgorithmStateListener<OptimizeAlgorithmState> listener) {
+	/**
+	 * Remove selected listener
+	 * 
+	 * @param listener
+	 */
+	public void removeStateListener(OptimizeAlgorithmStateListener listener) {
 		if (listener != null && states.contains(listener))
 			states.remove(listener);
 	}
 
+	/**
+	 * Remove all listeners
+	 */
 	public void clearStateListener() {
 		states.clear();
 	}
 
-	protected void fireStateListener(final OptimizeAlgorithmState state) {
-		this.currentState = state;
-		for (OptimizeAlgorithmStateListener<OptimizeAlgorithmState> item : states)
-			item.handleStateChanged(this, state);
+	protected void fireStateListener(final int state) {
+		currentState = OptimizeAlgorithmState.createState(state, this);
+		for (OptimizeAlgorithmStateListener item : states)
+			item.handleStateChanged(this, currentState);
 	}
 
+	/**
+	 * Set actual iteration number
+	 * 
+	 * @param iteration
+	 */
+	public void setActualIteration(int iteration) {
+		this.actualIteration = iteration;
+		fireStateListener(OptimizeAlgorithmState.ITERATION_CHANGED);
+	}
+
+	/**
+	 * Increment iteration of optimize cycle and call update of listeners
+	 */
+	public void increseIteration() {
+		this.actualIteration++;
+		fireStateListener(OptimizeAlgorithmState.ITERATION_CHANGED);
+	}
+
+	/**
+	 * Initialize state of algorithm before it is started
+	 */
+	public abstract void initialize();
+
+	/**
+	 * Run algorithm in new thread
+	 */
+	public abstract void run();
+
+	/**
+	 * Run algorithm in thread
+	 */
 	public void start() {
 		thread = new Thread(this);
 		thread.start();
 	}
 
+	/**
+	 * Stop threading algorithm
+	 */
 	public void stop() {
 		isRunning = false;
 		actualIteration = 0;
 	}
 
-	public abstract void run();
 }

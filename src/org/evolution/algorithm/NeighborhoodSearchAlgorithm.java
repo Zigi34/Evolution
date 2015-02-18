@@ -42,7 +42,7 @@ public class NeighborhoodSearchAlgorithm extends
 		this.localSearchFunction = localSearchFunction;
 	}
 
-	private void initialize() {
+	public void initialize() {
 		if (initialSolution == null)
 			initialSolution = getSolutionSpace().getRandomSolution();
 		bestSolutionValue = getObjectiveFunction().getFunctionValue(

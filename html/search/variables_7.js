@@ -1,4 +1,12 @@
 var searchData=
 [
-  ['objectivefunction',['objectiveFunction',['../classorg_1_1evolution_1_1algorithm_1_1_optimize_algorithm.html#ad36431276a739cd4b5a9daa2d61f8181',1,'org.evolution.algorithm.OptimizeAlgorithm.objectiveFunction()'],['../classorg_1_1evolution_1_1solution_1_1space_1_1_solution_space.html#a8ca7f5b8c237ba2f8c330ddc26afeeea',1,'org.evolution.solution.space.SolutionSpace.objectiveFunction()']]]
+  ['maxiteration',['maxIteration',['../classorg_1_1evolution_1_1algorithm_1_1_neighborhood_search_algorithm.html#a1bc79826f081fadf9be9f62458a375c4',1,'org.evolution.algorithm.NeighborhoodSearchAlgorithm.maxIteration()'],['../classorg_1_1evolution_1_1algorithm_1_1_optimize_algorithm.html#ad6aa272a68ef22052f56062279e20453',1,'org.evolution.algorithm.OptimizeAlgorithm.maxIteration()']]],
+  ['maxmutate',['maxMutate',['../classorg_1_1evolution_1_1algorithm_1_1ga_1_1_genetic_algorithm.html#ae08e23251e4d90dbb130905cc7f4171d',1,'org::evolution::algorithm::ga::GeneticAlgorithm']]],
+  ['maxselection',['maxSelection',['../classorg_1_1evolution_1_1algorithm_1_1ga_1_1_genetic_algorithm.html#a2d7b611f2cd8246ddecdbc09a040f119',1,'org::evolution::algorithm::ga::GeneticAlgorithm']]],
+  ['maxvalue',['maxValue',['../classorg_1_1evolution_1_1solution_1_1space_1_1_bounds.html#a4640138383bdd1685087d70b5deb61df',1,'org::evolution::solution::space::Bounds']]],
+  ['minimize',['minimize',['../classorg_1_1evolution_1_1algorithm_1_1_neighborhood_search_algorithm.html#afca652df4ebb020f6550f215843caae6',1,'org.evolution.algorithm.NeighborhoodSearchAlgorithm.minimize()'],['../classorg_1_1evolution_1_1algorithm_1_1_optimize_algorithm.html#ac2e30ccf42bc9e6cd8271ec2de868e2e',1,'org.evolution.algorithm.OptimizeAlgorithm.minimize()']]],
+  ['minmutate',['minMutate',['../classorg_1_1evolution_1_1algorithm_1_1ga_1_1_genetic_algorithm.html#ad05e2312ca2fde37861354f12fb06ca6',1,'org::evolution::algorithm::ga::GeneticAlgorithm']]],
+  ['minselection',['minSelection',['../classorg_1_1evolution_1_1algorithm_1_1ga_1_1_genetic_algorithm.html#a03431f7e974cdd9d38cf628aad6c0b9a',1,'org::evolution::algorithm::ga::GeneticAlgorithm']]],
+  ['minvalue',['minValue',['../classorg_1_1evolution_1_1solution_1_1space_1_1_bounds.html#a7c43712e08b4ad1d479b36beca86692a',1,'org::evolution::solution::space::Bounds']]],
+  ['mutaterange',['mutateRange',['../classorg_1_1evolution_1_1algorithm_1_1ga_1_1_genetic_algorithm.html#ab429089f7d2ef9e0a88db08cb01eb577',1,'org::evolution::algorithm::ga::GeneticAlgorithm']]]
 ];

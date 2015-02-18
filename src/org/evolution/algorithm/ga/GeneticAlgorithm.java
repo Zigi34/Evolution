@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.evolution.algorithm.OptimizeAlgorithm;
 import org.evolution.algorithm.population.Population;
+import org.evolution.algorithm.state.OptimizeAlgorithmState;
 import org.evolution.function.cross.CrossFunction;
 import org.evolution.function.select.SelectFunction;
 import org.evolution.solution.Solution;
@@ -34,13 +35,13 @@ public class GeneticAlgorithm<T extends Solution> extends OptimizeAlgorithm<T> {
 
 	@Override
 	public String toString() {
-		return "Genetický algoritmus";
+		return "Genetic algorithm";
 	}
 
 	public void run() {
-		startRunning();
-		setCurrGeneration(0);
-		fireStateListener(GeneticAlgorithmState.STARTED_STATE);
+		initialize();
+		fireStateListener(OptimizeAlgorithmState.STARTED);
+		setActualIteration(0);
 		try {
 			setBestSolution(getPopulation().get(0)); // actually best solution
 

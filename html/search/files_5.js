@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['restrictivecondition_2ejava',['RestrictiveCondition.java',['../_restrictive_condition_8java.html',1,'']]]
+  ['neighborhoodfunction_2ejava',['NeighborhoodFunction.java',['../_neighborhood_function_8java.html',1,'']]],
+  ['neighborhoodsearchalgorithm_2ejava',['NeighborhoodSearchAlgorithm.java',['../_neighborhood_search_algorithm_8java.html',1,'']]]
 ];

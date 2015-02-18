@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['multidimensionalspace_2ejava',['MultidimensionalSpace.java',['../_multidimensional_space_8java.html',1,'']]]
+  ['crossfunction_2ejava',['CrossFunction.java',['../_cross_function_8java.html',1,'']]]
 ];
