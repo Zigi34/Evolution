@@ -7,8 +7,8 @@ public class BasicRestrictiveFunction extends
 
 	@Override
 	public boolean isIncluded(ArraySolution solution) {
-		for (int i = 0; i < solution.getSize(); i++)
-			if (solution.getValue(i) < 0)
+		for (int i = 0; i < solution.size(); i++)
+			if (solution.get(i) < 0)
 				return true;
 		return false;
 	}

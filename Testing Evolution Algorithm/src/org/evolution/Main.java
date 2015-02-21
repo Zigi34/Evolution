@@ -12,8 +12,8 @@ import org.evolution.function.cross.GeneticCrossFunction;
 import org.evolution.function.elitismus.ElitismusFunction;
 import org.evolution.function.elitismus.GeneralElitismusFunction;
 import org.evolution.function.mutate.GeneticMuateFunction;
+import org.evolution.function.objective.DeJong1;
 import org.evolution.function.objective.ObjectiveFunction;
-import org.evolution.function.objective.TestFunction;
 import org.evolution.function.select.RouletteWheelSelect;
 import org.evolution.function.select.SelectFunction;
 import org.evolution.solution.ArraySolution;
@@ -30,30 +30,36 @@ public class Main {
 	}
 
 	public void startGeneticAlgorithm() {
+		// Cross function
 		CrossFunction<ArraySolution> crossFce = new GeneticCrossFunction<ArraySolution>();
-		crossFce.setCrossProbability(0.9);
-		algorithm.setCrossFunction(crossFce);
+		crossFce.setCrossProbability(0.8);
+		// algorithm.setCrossFunction(crossFce);
 
+		// Mutate function
 		GeneticMuateFunction<ArraySolution> mutateFce = new GeneticMuateFunction<ArraySolution>();
 		mutateFce.setMutatedProbability(0.05);
-		algorithm.setMutateFunction(mutateFce);
+		// algorithm.setMutateFunction(mutateFce);
 
+		// Select function
 		SelectFunction<ArraySolution> selectFce = new RouletteWheelSelect<ArraySolution>();
-		algorithm.setSelectFunction(selectFce);
+		// algorithm.setSelectFunction(selectFce);
 
+		// Elitismus
 		ElitismusFunction<ArraySolution> elitismusFce = new GeneralElitismusFunction<ArraySolution>();
-		algorithm.setElitismusFunction(elitismusFce);
+		// algorithm.setElitismusFunction(elitismusFce);
+
+		// Solution Space
+		ObjectiveFunction<ArraySolution> objectiveFce = new DeJong1<ArraySolution>();
 
 		SolutionSpace<ArraySolution> solutionSpace = new MultidimensionalSpace();
-		ObjectiveFunction<ArraySolution> objectiveFce = new TestFunction();
 		solutionSpace.setObjectiveFunction(objectiveFce);
-		algorithm.setSolutionSpace(solutionSpace);
+		// algorithm.setSolutionSpace(solutionSpace);
 
 		Population<ArraySolution> population = new Population<ArraySolution>();
-		population.createRandomPopulation(100, solutionSpace);
-		algorithm.setPopulation(population);
+		population.createRandomPopulation(20, solutionSpace);
+		// algorithm.setPopulation(population);
 
-		algorithm.setMaxIteration(500);
+		// algorithm.setMaxIteration(500);
 
 		algorithm
 				.addStateListener(new OptimizeAlgorithmStateListener<ArraySolution>() {

@@ -3,6 +3,7 @@ package org.evolution.algorithm.ga;
 import java.util.List;
 
 import org.evolution.algorithm.OptimizeAlgorithm;
+import org.evolution.algorithm.exception.AlgorithmException;
 import org.evolution.algorithm.population.Population;
 import org.evolution.algorithm.state.GeneticAlgorithmState;
 import org.evolution.function.cross.CrossFunction;
@@ -33,57 +34,69 @@ public class GeneticAlgorithm<T extends Solution> extends OptimizeAlgorithm<T> {
 		return "Genetic algorithm";
 	}
 
+	@Override
+	public void initialize() throws AlgorithmException {
+		super.initialize();
+
+	}
+
 	public void run() {
-		fireStateListener(GeneticAlgorithmState.STARTED);
-		// sort solutions from best to worst
-		getPopulation().sortPopulation(
-				getSolutionSpace().getObjectiveFunction());
-		// set first solution in population as best
-		setBestSolution(getPopulation().get(0));
-
-		// calculate algorithm cycle, while reaching maximum iteration
-		while (getActualIteration() < getMaxIteration() && isRunning()) {
-
-			Population<T> newPopulation = new Population<T>();
-			// SELECTION
-			fireStateListener(GeneticAlgorithmState.SELECT_START);
-			List<T> parentSolutions = getSelectFunction().select(
-					getPopulation());
-			if (isParentInPopulation)
-				newPopulation.addAll(parentSolutions);
-			fireStateListener(GeneticAlgorithmState.SELECT_END);
-
-			// CROSS OVER
-			fireStateListener(GeneticAlgorithmState.CROSS_START);
-			List<T> potomci = getCrossFunction().cross(parentSolutions);
-			newPopulation.addAll(potomci);
-			fireStateListener(GeneticAlgorithmState.CROSS_END);
-
-			// MUTATION
-			fireStateListener(GeneticAlgorithmState.MUTATE_START);
-			potomci = getMutateFunction().mutate(potomci, getSolutionSpace());
-			fireStateListener(GeneticAlgorithmState.MUTATE_END);
-
-			fireStateListener(GeneticAlgorithmState.ELITISMUS_END);
-			List<T> elitismusSolutions = getElitismusFunction().elitismus(
-					newPopulation);
-			fireStateListener(GeneticAlgorithmState.ELITISMUS_END);
-
-			getPopulation().clear();
-			getPopulation().addAll(elitismusSolutions);
-			fireStateListener(GeneticAlgorithmState.NEW_POPULATION_CREATED);
-
+		try {
+			initialize();
+			fireStateListener(GeneticAlgorithmState.STARTED);
 			// sort solutions from best to worst
 			getPopulation().sortPopulation(
 					getSolutionSpace().getObjectiveFunction());
 			// set first solution in population as best
-			checkBestSolution(getPopulation().get(0));
+			setBestSolution(getPopulation().get(0));
 
-			// increse iteration
-			increseIteration();
+			// calculate algorithm cycle, while reaching maximum iteration
+			while (getActualIteration() < getMaxIteration() && isRunning()) {
+
+				Population<T> newPopulation = new Population<T>();
+				// SELECTION
+				fireStateListener(GeneticAlgorithmState.SELECT_START);
+				List<T> parentSolutions = getSelectFunction().select(
+						getPopulation());
+				if (isParentInPopulation)
+					newPopulation.addAll(parentSolutions);
+				fireStateListener(GeneticAlgorithmState.SELECT_END);
+
+				// CROSS OVER
+				fireStateListener(GeneticAlgorithmState.CROSS_START);
+				List<T> potomci = getCrossFunction().cross(parentSolutions);
+				newPopulation.addAll(potomci);
+				fireStateListener(GeneticAlgorithmState.CROSS_END);
+
+				// MUTATION
+				fireStateListener(GeneticAlgorithmState.MUTATE_START);
+				potomci = getMutateFunction().mutate(potomci,
+						getSolutionSpace());
+				fireStateListener(GeneticAlgorithmState.MUTATE_END);
+
+				fireStateListener(GeneticAlgorithmState.ELITISMUS_END);
+				List<T> elitismusSolutions = getElitismusFunction().elitismus(
+						newPopulation);
+				fireStateListener(GeneticAlgorithmState.ELITISMUS_END);
+
+				getPopulation().clear();
+				getPopulation().addAll(elitismusSolutions);
+				fireStateListener(GeneticAlgorithmState.NEW_POPULATION_CREATED);
+
+				// sort solutions from best to worst
+				getPopulation().sortPopulation(
+						getSolutionSpace().getObjectiveFunction());
+				// set first solution in population as best
+				checkBestSolution(getPopulation().get(0));
+
+				// increse iteration
+				increseIteration();
+			}
+			stop();
+			fireStateListener(GeneticAlgorithmState.ENDED);
+		} catch (AlgorithmException exception) {
+			log.error(exception);
 		}
-		stop();
-		fireStateListener(GeneticAlgorithmState.ENDED);
 	}
 
 	public CrossFunction<T> getCrossFunction() {

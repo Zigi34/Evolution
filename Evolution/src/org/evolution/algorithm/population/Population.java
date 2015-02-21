@@ -13,7 +13,6 @@ import org.evolution.solution.Solution;
 import org.evolution.solution.space.SolutionSpace;
 
 public class Population<T extends Solution> implements Collection<T>, List<T> {
-
 	private List<T> values = new LinkedList<T>();
 
 	public Population() {

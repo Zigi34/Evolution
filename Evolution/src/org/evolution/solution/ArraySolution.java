@@ -16,16 +16,16 @@ public class ArraySolution extends Solution {
 	}
 
 	public ArraySolution(ArraySolution solution) {
-		this(solution.getSize());
-		for (int index = 0; index < getSize(); index++)
-			values[index] = solution.getValue(index);
+		this(solution.size());
+		for (int index = 0; index < size(); index++)
+			values[index] = solution.get(index);
 	}
 
 	public void setValue(int dimensionIndex, Double value) {
 		values[dimensionIndex] = value;
 	}
 
-	public Double getValue(int index) {
+	public Double get(int index) {
 		return values[index];
 	}
 
@@ -33,7 +33,7 @@ public class ArraySolution extends Solution {
 		return values;
 	}
 
-	public int getSize() {
+	public int size() {
 		return values.length;
 	}
 
@@ -45,14 +45,14 @@ public class ArraySolution extends Solution {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < getSize() - 1; i++)
+		for (int i = 0; i < size() - 1; i++)
 			builder.append(formatter.format(values[i]) + ", ");
-		builder.append(formatter.format(values[getSize() - 1]));
+		builder.append(formatter.format(values[size() - 1]));
 		return builder.toString();
 	}
 
 	@Override
-	public void setValue(Object value, int index) {
+	public void set(Object value, int index) {
 		values[index] = (Double) value;
 	}
 }

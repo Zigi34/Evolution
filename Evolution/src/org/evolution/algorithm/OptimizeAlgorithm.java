@@ -4,9 +4,12 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.evolution.algorithm.exception.AlgorithmException;
 import org.evolution.algorithm.population.Population;
 import org.evolution.algorithm.state.OptimizeAlgorithmState;
 import org.evolution.algorithm.state.OptimizeAlgorithmStateListener;
+import org.evolution.algorithm.util.Constants;
 import org.evolution.solution.Solution;
 import org.evolution.solution.space.SolutionSpace;
 
@@ -19,6 +22,11 @@ import org.evolution.solution.space.SolutionSpace;
  *            generic type of optimized solution
  */
 public abstract class OptimizeAlgorithm<T extends Solution> implements Runnable {
+	protected Logger log = Logger.getLogger(getClass());
+
+	private int minPopulationSize = 2;
+	private int maxPopulationSize = 10000;
+
 	/**
 	 * space of solution
 	 */
@@ -75,6 +83,51 @@ public abstract class OptimizeAlgorithm<T extends Solution> implements Runnable 
 
 	public OptimizeAlgorithm() {
 
+	}
+
+	public void initialize() throws AlgorithmException {
+		if (getPopulation() == null)
+			throw new AlgorithmException(Constants.ERROR_POPULATION_NOT_SET,
+					new OptimizeAlgorithmState<T>(this,
+							OptimizeAlgorithmState.INITIALIZE));
+		if (getPopulation().size() < getMinPopulationSize())
+			throw new AlgorithmException(String.format(
+					Constants.ERROR_POPULATION_NOT_SET, minPopulationSize),
+					new OptimizeAlgorithmState<T>(this,
+							OptimizeAlgorithmState.INITIALIZE));
+		if (getPopulation().size() > getMaxPopulationSize())
+			throw new AlgorithmException(String.format(
+					Constants.ERROR_POPULATION_NOT_SET, maxPopulationSize),
+					new OptimizeAlgorithmState<T>(this,
+							OptimizeAlgorithmState.INITIALIZE));
+	}
+
+	public int getMinPopulationSize() {
+		return minPopulationSize;
+	}
+
+	public void setMinPopulationSize(int minPopulationSize) {
+		if (minPopulationSize >= 0) {
+			if (minPopulationSize <= maxPopulationSize)
+				this.minPopulationSize = minPopulationSize;
+			else {
+				maxPopulationSize = minPopulationSize;
+				this.minPopulationSize = minPopulationSize;
+			}
+		}
+	}
+
+	public int getMaxPopulationSize() {
+		return maxPopulationSize;
+	}
+
+	public void setMaxPopulationSize(int maxPopulationSize) {
+		if (maxPopulationSize >= minPopulationSize)
+			this.maxPopulationSize = maxPopulationSize;
+		else {
+			minPopulationSize = maxPopulationSize;
+			this.maxPopulationSize = maxPopulationSize;
+		}
 	}
 
 	/**
@@ -219,7 +272,7 @@ public abstract class OptimizeAlgorithm<T extends Solution> implements Runnable 
 		states.clear();
 	}
 
-	protected void fireStateListener(final int state) {
+	protected void fireStateListener(final String state) {
 		currentState = new OptimizeAlgorithmState<T>(this, state);
 		for (OptimizeAlgorithmStateListener<T> item : states) {
 			if (currentState.getState() == OptimizeAlgorithmState.ITERATION_CHANGED) {

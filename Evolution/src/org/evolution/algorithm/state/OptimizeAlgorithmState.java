@@ -12,34 +12,35 @@ import org.evolution.solution.Solution;
 public class OptimizeAlgorithmState<T extends Solution> {
 
 	/**
-	 * State of STARTED algorithm (value = 1)
+	 * State of STARTED algorithm
 	 */
-	public static final int STARTED = 1;
+	public static final String STARTED = "Start algorithm";
 	/**
-	 * State of ENDED algorithm (value = 2)
+	 * State of ENDED algorithm
 	 */
-	public static final int ENDED = 2;
+	public static final String ENDED = "End algorithm";
 	/**
-	 * State of FIND NEW BEST SOLUTION (value = 3)
+	 * State of FIND NEW BEST SOLUTION
 	 */
-	public static final int NEW_BEST_SOLUTION = 3;
-	public static final int ITERATION_CHANGED = 4;
-	public static final int INITIALIZE = 5;
+	public static final String NEW_BEST_SOLUTION = "New best solution found";
+	public static final String ITERATION_CHANGED = "Iteration changed";
+	public static final String INITIALIZE = "Initialization";
+	public static final String NO_STATE = "No state";
 
 	/**
 	 * State number
 	 */
-	private int state;
+	private String state;
 	/**
 	 * Algorithm of changed state
 	 */
 	private OptimizeAlgorithm<T> algorithm;
 
 	public OptimizeAlgorithmState(OptimizeAlgorithm<T> algorithm) {
-		this(algorithm, 0);
+		this(algorithm, NO_STATE);
 	}
 
-	public OptimizeAlgorithmState(OptimizeAlgorithm<T> algorithm, int state) {
+	public OptimizeAlgorithmState(OptimizeAlgorithm<T> algorithm, String state) {
 		this.algorithm = algorithm;
 		this.state = state;
 	}
@@ -53,7 +54,7 @@ public class OptimizeAlgorithmState<T extends Solution> {
 	 *            algorithm with chaned state
 	 * @return
 	 */
-	public OptimizeAlgorithmState<T> createState(int state,
+	public OptimizeAlgorithmState<T> createState(String state,
 			OptimizeAlgorithm<T> algorithm) {
 		return new OptimizeAlgorithmState<T>(algorithm, state);
 	}
@@ -63,7 +64,7 @@ public class OptimizeAlgorithmState<T extends Solution> {
 	 * 
 	 * @return
 	 */
-	public int getState() {
+	public String getState() {
 		return state;
 	}
 
@@ -74,5 +75,10 @@ public class OptimizeAlgorithmState<T extends Solution> {
 	 */
 	public OptimizeAlgorithm<T> getAlgorithm() {
 		return algorithm;
+	}
+
+	@Override
+	public String toString() {
+		return getState();
 	}
 }

@@ -22,9 +22,9 @@ public class GeneticMuateFunction<T extends Solution> extends MutateFunction<T> 
 			T solution = mutatedSolutions.get(i);
 			T randomSolution = getAlgorithm().getSolutionSpace()
 					.getRandomSolution();
-			for (int parameterIndex = 0; parameterIndex < solution.getSize(); parameterIndex++) {
+			for (int parameterIndex = 0; parameterIndex < solution.size(); parameterIndex++) {
 				if (random.nextDouble() <= mutatedProbability) {
-					solution.setValue(randomSolution.getValue(parameterIndex),
+					solution.set(randomSolution.get(parameterIndex),
 							parameterIndex);
 				}
 			}

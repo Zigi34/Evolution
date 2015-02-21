@@ -1,43 +1,45 @@
 package org.evolution.algorithm.state;
 
 import org.evolution.algorithm.OptimizeAlgorithm;
+import org.evolution.solution.Solution;
 
-public class GeneticAlgorithmState extends OptimizeAlgorithmState {
+public class GeneticAlgorithmState<T extends Solution> extends
+		OptimizeAlgorithmState<T> {
 
 	/**
 	 * State of SELECTION solutions to cross
 	 */
-	public static final int SELECT_START = 100;
-	public static final int SELECT_END = 101;
+	public static final String SELECT_START = "Select function started";
+	public static final String SELECT_END = "Select function ended";
 
 	/**
 	 * State of CROSS solutions
 	 */
-	public static final int CROSS_START = 102;
-	public static final int CROSS_END = 103;
+	public static final String CROSS_START = "Cross function started";
+	public static final String CROSS_END = "Cross function ended";
 
 	/**
 	 * State of MUTATE solutions
 	 */
-	public static final int MUTATE_START = 104;
-	public static final int MUTATE_END = 105;
+	public static final String MUTATE_START = "Mutate function started";
+	public static final String MUTATE_END = "Mutate function ended";
 
 	/**
 	 * State of ELITISMUS solutions
 	 */
-	public static final int ELITISMUS_START = 106;
-	public static final int ELITISMUS_END = 107;
+	public static final String ELITISMUS_START = "Elitismus function started";
+	public static final String ELITISMUS_END = "Elitismus function ended";
 
 	/**
 	 * State of NEW_POPULATION of solutions
 	 */
-	public static final int NEW_POPULATION_CREATED = 108;
+	public static final String NEW_POPULATION_CREATED = "New population created";
 
-	protected GeneticAlgorithmState(OptimizeAlgorithm<?> algorithm, int state) {
+	protected GeneticAlgorithmState(OptimizeAlgorithm<T> algorithm, String state) {
 		super(algorithm, state);
 	}
 
-	protected GeneticAlgorithmState(OptimizeAlgorithm<?> algorithm) {
+	protected GeneticAlgorithmState(OptimizeAlgorithm<T> algorithm) {
 		super(algorithm);
 	}
 }

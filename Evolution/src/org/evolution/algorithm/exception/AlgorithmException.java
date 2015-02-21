@@ -5,14 +5,14 @@ import org.evolution.algorithm.state.OptimizeAlgorithmState;
 public class AlgorithmException extends Exception {
 
 	private static final long serialVersionUID = 7867611706726704845L;
-	private OptimizeAlgorithmState state;
+	private OptimizeAlgorithmState<?> state;
 
-	public AlgorithmException(String message, OptimizeAlgorithmState state) {
+	public AlgorithmException(String message, OptimizeAlgorithmState<?> state) {
 		super(message);
 		this.state = state;
 	}
 
-	public OptimizeAlgorithmState getState() {
+	public OptimizeAlgorithmState<?> getState() {
 		return state;
 	}
 

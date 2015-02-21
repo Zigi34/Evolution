@@ -21,12 +21,12 @@ public class GeneticCrossFunction<T extends ArraySolution> extends
 				T solution1 = (T) inputSolutions.get(index).createCopy();
 				T solution2 = (T) inputSolutions.get(index - 1).createCopy();
 
-				int length = solution1.getSize();
+				int length = solution1.size();
 				int index1 = random.nextInt(length - 1) + 1;
 
 				for (int j = 0; j < index1; j++) {
-					Double value1 = solution1.getValue(j);
-					Double value2 = solution2.getValue(j);
+					Double value1 = solution1.get(j);
+					Double value2 = solution2.get(j);
 
 					solution1.setValue(j, value2);
 					solution2.setValue(j, value1);
