@@ -62,4 +62,9 @@ public abstract class SolutionSpace<T extends Solution> {
 	public void setObjectiveFunction(ObjectiveFunction<T> objectiveFunction) {
 		this.objectiveFunction = objectiveFunction;
 	}
+
+	@Override
+	public String toString() {
+		return "Solution space";
+	}
 }

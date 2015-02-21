@@ -1,5 +1,8 @@
 package org.evolution.algorithm;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+
 import org.evolution.function.neighborhood.NeighborhoodFunction;
 import org.evolution.function.objective.ObjectiveFunction;
 import org.evolution.solution.ArraySolution;
@@ -63,5 +66,17 @@ public class NeighborhoodSearchAlgorithm extends
 			checkBestSolution(findSolution);
 			actualIteration++;
 		}
+	}
+
+	@Override
+	public void fromXML(File file) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void toXML(File file) throws FileNotFoundException {
+		// TODO Auto-generated method stub
+
 	}
 }

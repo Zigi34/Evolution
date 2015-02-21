@@ -6,13 +6,16 @@ import org.evolution.algorithm.OptimizeAlgorithm;
 import org.evolution.algorithm.exception.AlgorithmException;
 import org.evolution.algorithm.population.Population;
 import org.evolution.algorithm.state.GeneticAlgorithmState;
+import org.evolution.algorithm.state.OptimizeAlgorithmState;
+import org.evolution.algorithm.util.Constants;
 import org.evolution.function.cross.CrossFunction;
 import org.evolution.function.elitismus.ElitismusFunction;
 import org.evolution.function.mutate.MutateFunction;
 import org.evolution.function.select.SelectFunction;
 import org.evolution.solution.Solution;
 
-public class GeneticAlgorithm<T extends Solution> extends OptimizeAlgorithm<T> {
+public abstract class GeneticAlgorithm<T extends Solution> extends
+		OptimizeAlgorithm<T> {
 
 	/* EVOLUTION OPERATORS */
 	private SelectFunction<T> selectFunction;
@@ -37,7 +40,26 @@ public class GeneticAlgorithm<T extends Solution> extends OptimizeAlgorithm<T> {
 	@Override
 	public void initialize() throws AlgorithmException {
 		super.initialize();
-
+		if (getSelectFunction() == null)
+			throw new AlgorithmException(
+					Constants.ERROR_SELECT_FUNCTION_NOT_SET,
+					new OptimizeAlgorithmState<T>(this,
+							OptimizeAlgorithmState.INITIALIZE));
+		if (getMutateFunction() == null)
+			throw new AlgorithmException(
+					Constants.ERROR_MUTATE_FUNCTION_NOT_SET,
+					new OptimizeAlgorithmState<T>(this,
+							OptimizeAlgorithmState.INITIALIZE));
+		if (getCrossFunction() == null)
+			throw new AlgorithmException(
+					Constants.ERROR_CROSS_FUNCTION_NOT_SET,
+					new OptimizeAlgorithmState<T>(this,
+							OptimizeAlgorithmState.INITIALIZE));
+		if (getElitismusFunction() == null)
+			throw new AlgorithmException(
+					Constants.ERROR_ELITISMUS_FUNCTION_NOT_SET,
+					new OptimizeAlgorithmState<T>(this,
+							OptimizeAlgorithmState.INITIALIZE));
 	}
 
 	public void run() {

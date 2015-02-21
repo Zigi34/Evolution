@@ -5,9 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import org.evolution.solution.Solution;
+import org.evolution.solution.ArraySolution;
 
-public class RouletteWheelSelect<T extends Solution> extends SelectFunction<T> {
+public class ArrayRouletteWheelSelect extends SelectFunction<ArraySolution> {
 
 	private Random random = new Random();
 	public static final double maxSelection = 1.0;
@@ -15,14 +15,14 @@ public class RouletteWheelSelect<T extends Solution> extends SelectFunction<T> {
 	private double selectProbability = 1.0;
 
 	@Override
-	public List<T> select(List<T> population) {
+	public List<ArraySolution> select(List<ArraySolution> population) {
 		int selectCount = (int) Math
 				.ceil(population.size() * selectProbability);
-		List<T> result = new LinkedList<T>();
+		List<ArraySolution> result = new LinkedList<ArraySolution>();
 		List<Double> cumulativeFitnesses = new ArrayList<Double>(selectCount);
 		double sumCumulativeFitness = 0.0;
 
-		for (T solution : population) {
+		for (ArraySolution solution : population) {
 			Double functionValue = solution.getFunctionValue();
 			sumCumulativeFitness += getAlgorithm().isMinimize() ? (1000.0 / functionValue)
 					: functionValue;

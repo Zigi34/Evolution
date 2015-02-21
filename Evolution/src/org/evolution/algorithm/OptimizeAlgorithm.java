@@ -10,6 +10,7 @@ import org.evolution.algorithm.population.Population;
 import org.evolution.algorithm.state.OptimizeAlgorithmState;
 import org.evolution.algorithm.state.OptimizeAlgorithmStateListener;
 import org.evolution.algorithm.util.Constants;
+import org.evolution.model.ConfigurableAlgorithm;
 import org.evolution.solution.Solution;
 import org.evolution.solution.space.SolutionSpace;
 
@@ -21,7 +22,9 @@ import org.evolution.solution.space.SolutionSpace;
  * @param <T>
  *            generic type of optimized solution
  */
-public abstract class OptimizeAlgorithm<T extends Solution> implements Runnable {
+
+public abstract class OptimizeAlgorithm<T extends Solution> implements
+		Runnable, ConfigurableAlgorithm {
 	protected Logger log = Logger.getLogger(getClass());
 
 	private int minPopulationSize = 2;
@@ -92,12 +95,17 @@ public abstract class OptimizeAlgorithm<T extends Solution> implements Runnable 
 							OptimizeAlgorithmState.INITIALIZE));
 		if (getPopulation().size() < getMinPopulationSize())
 			throw new AlgorithmException(String.format(
-					Constants.ERROR_POPULATION_NOT_SET, minPopulationSize),
+					Constants.ERROR_POPULATION_TOO_SMALL, minPopulationSize),
 					new OptimizeAlgorithmState<T>(this,
 							OptimizeAlgorithmState.INITIALIZE));
 		if (getPopulation().size() > getMaxPopulationSize())
 			throw new AlgorithmException(String.format(
-					Constants.ERROR_POPULATION_NOT_SET, maxPopulationSize),
+					Constants.ERROR_POPULATION_TOO_BIG, maxPopulationSize),
+					new OptimizeAlgorithmState<T>(this,
+							OptimizeAlgorithmState.INITIALIZE));
+		if (getSolutionSpace() == null)
+			throw new AlgorithmException(
+					Constants.ERROR_SOLUTION_SPACE_NOT_SET,
 					new OptimizeAlgorithmState<T>(this,
 							OptimizeAlgorithmState.INITIALIZE));
 	}
@@ -343,5 +351,4 @@ public abstract class OptimizeAlgorithm<T extends Solution> implements Runnable 
 		isRunning = false;
 		actualIteration = 0;
 	}
-
 }

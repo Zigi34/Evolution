@@ -8,11 +8,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.apache.log4j.Logger;
+import org.evolution.algorithm.util.Constants;
 import org.evolution.function.objective.ObjectiveFunction;
 import org.evolution.solution.Solution;
 import org.evolution.solution.space.SolutionSpace;
 
 public class Population<T extends Solution> implements Collection<T>, List<T> {
+	private Logger log = Logger.getLogger(getClass());
 	private List<T> values = new LinkedList<T>();
 
 	public Population() {
@@ -46,8 +49,13 @@ public class Population<T extends Solution> implements Collection<T>, List<T> {
 	}
 
 	public void createRandomPopulation(int count, SolutionSpace<T> space) {
-		for (int i = 0; i < count; i++)
-			add(space.getRandomSolution());
+		for (int i = 0; i < count; i++) {
+			T solution = space.getRandomSolution();
+			if (solution != null)
+				add(solution);
+			else
+				log.warn(Constants.WARN_SOLUTIONSPACE_SOLUTION_CANT_CREATE);
+		}
 	}
 
 	public List<T> getParameters() {

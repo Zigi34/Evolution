@@ -2,13 +2,12 @@ package org.evolution.test;
 
 import static org.junit.Assert.fail;
 
-import org.evolution.algorithm.ga.GeneticAlgorithm;
-import org.evolution.solution.ArraySolution;
+import org.evolution.algorithm.ga.ArrayGeneticAlgorithm;
 import org.junit.Test;
 
 public class GeneticAlgorithmTest {
 
-	private GeneticAlgorithm<ArraySolution> algorithm = new GeneticAlgorithm<ArraySolution>();
+	private ArrayGeneticAlgorithm algorithm = new ArrayGeneticAlgorithm();
 
 	@Test
 	public void defaultStart() {
