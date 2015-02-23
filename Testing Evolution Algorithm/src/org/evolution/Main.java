@@ -1,15 +1,21 @@
 package org.evolution;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Hashtable;
 
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.evolution.algorithm.exception.SolutionSpaceException;
 import org.evolution.algorithm.ga.ArrayGeneticAlgorithm;
 import org.evolution.algorithm.ga.GeneticAlgorithm;
 import org.evolution.algorithm.population.Population;
 import org.evolution.algorithm.state.GeneticAlgorithmState;
 import org.evolution.algorithm.state.OptimizeAlgorithmState;
 import org.evolution.algorithm.state.OptimizeAlgorithmStateListener;
+import org.evolution.algorithm.util.XMLManager;
 import org.evolution.function.cross.CrossFunction;
 import org.evolution.function.cross.GeneticCrossFunction;
 import org.evolution.function.elitismus.ElitismusFunction;
@@ -21,7 +27,8 @@ import org.evolution.function.select.ArrayRouletteWheelSelect;
 import org.evolution.function.select.SelectFunction;
 import org.evolution.solution.ArraySolution;
 import org.evolution.solution.space.MultidimensionalSpace;
-import org.evolution.solution.space.SolutionSpace;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public class Main {
 
@@ -54,8 +61,13 @@ public class Main {
 		// Solution Space
 		ObjectiveFunction<ArraySolution> objectiveFce = new DeJong1<ArraySolution>();
 
-		SolutionSpace<ArraySolution> solutionSpace = new MultidimensionalSpace(
-				2);
+		MultidimensionalSpace solutionSpace = new MultidimensionalSpace();
+		try {
+			solutionSpace.addBound(-4, 4);
+			solutionSpace.addBound(-4, 4);
+		} catch (SolutionSpaceException e) {
+			e.printStackTrace();
+		}
 		solutionSpace.setObjectiveFunction(objectiveFce);
 		algorithm.setSolutionSpace(solutionSpace);
 
@@ -113,10 +125,23 @@ public class Main {
 
 		// algorithm.start();
 		try {
-			algorithm.toXML(new File("config.xml"));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+			Document doc = XMLManager.createDocument();
+			Element elem = algorithm.createXML();
+			Element root = doc.createElement("config");
+			root.appendChild(doc.importNode(elem, true));
+			doc.appendChild(root);
+			TransformerFactory transformerFactory = TransformerFactory
+					.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource source = new DOMSource(doc);
+			StreamResult result = new StreamResult(new File("file.xml"));
 
+			transformer.transform(source, result);
+
+			System.out.println("File saved!");
+			System.out.println(elem);
+		} catch (Exception exc) {
+			exc.printStackTrace();
+		}
 	}
 }

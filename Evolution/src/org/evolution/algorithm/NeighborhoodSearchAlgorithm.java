@@ -1,16 +1,19 @@
 package org.evolution.algorithm;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.evolution.function.neighborhood.NeighborhoodFunction;
 import org.evolution.function.objective.ObjectiveFunction;
 import org.evolution.solution.ArraySolution;
 import org.evolution.solution.space.SolutionSpace;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public class NeighborhoodSearchAlgorithm extends
 		OptimizeAlgorithm<ArraySolution> {
 
+	public final static String XML_ENTITY = "neighborhood_search";
 	private NeighborhoodFunction<ArraySolution> localSearchFunction;
 
 	private int maxIteration = 10;
@@ -69,13 +72,25 @@ public class NeighborhoodSearchAlgorithm extends
 	}
 
 	@Override
-	public void fromXML(File file) {
-		// TODO Auto-generated method stub
+	public Element createXML() {
+		try {
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory
+					.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
+			Document doc = docBuilder.newDocument();
+			Element rootElement = doc.createElement("algorithm");
+			rootElement.setAttribute("type", XML_ENTITY);
+			doc.appendChild(rootElement);
+			return rootElement;
+		} catch (Exception exc) {
+			log.error("Create XML is failed");
+		}
+		return null;
 	}
 
 	@Override
-	public void toXML(File file) throws FileNotFoundException {
+	public void loadXML(Element element) {
 		// TODO Auto-generated method stub
 
 	}

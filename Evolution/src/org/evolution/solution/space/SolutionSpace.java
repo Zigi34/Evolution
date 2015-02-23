@@ -3,32 +3,41 @@ package org.evolution.solution.space;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.evolution.function.objective.ObjectiveFunction;
+import org.evolution.model.ConfigurationModel;
 import org.evolution.solution.Solution;
 import org.evolution.solution.space.restriction.RestrictiveCondition;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
-public abstract class SolutionSpace<T extends Solution> {
-	private List<RestrictiveCondition<T>> restrictiveConditions = new LinkedList<RestrictiveCondition<T>>();
+public abstract class SolutionSpace<T extends Solution> implements
+		ConfigurationModel {
+	private List<RestrictiveCondition<T>> restrictives = new LinkedList<RestrictiveCondition<T>>();
 	private boolean isHardRestricted = true;
 	private T solutionPattern;
 	private ObjectiveFunction<T> objectiveFunction;
 
-	public void add(RestrictiveCondition<T> condition) {
-		if (restrictiveConditions.contains(condition))
-			restrictiveConditions.add(condition);
+	public final static String XML_ENTITY = "solution_space";
+
+	public void addRestrictive(RestrictiveCondition<T> condition) {
+		if (restrictives.contains(condition))
+			restrictives.add(condition);
 	}
 
 	public void clearRestrictiveConditions() {
-		restrictiveConditions.clear();
+		restrictives.clear();
 	}
 
 	public void removeRestrictivecondition(RestrictiveCondition<T> condition) {
-		if (restrictiveConditions.contains(condition))
-			restrictiveConditions.remove(condition);
+		if (restrictives.contains(condition))
+			restrictives.remove(condition);
 	}
 
 	public List<RestrictiveCondition<T>> getRestrictiveConditions() {
-		return restrictiveConditions;
+		return restrictives;
 	}
 
 	public T getSolutionPattern() {
@@ -64,7 +73,28 @@ public abstract class SolutionSpace<T extends Solution> {
 	}
 
 	@Override
-	public String toString() {
-		return "Solution space";
+	public Element createXML() {
+		try {
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory
+					.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+			Document doc = docBuilder.newDocument();
+			Element rootElement = doc.createElement(XML_ENTITY);
+			for (RestrictiveCondition<T> condition : restrictives) {
+				rootElement.appendChild(condition.createXML());
+			}
+			doc.appendChild(rootElement);
+			return rootElement;
+		} catch (Exception exc) {
+			// log.error("Create XML is failed");
+		}
+		return null;
+	}
+
+	@Override
+	public void loadXML(Element element) {
+		// TODO Auto-generated method stub
+
 	}
 }

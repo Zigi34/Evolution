@@ -2,6 +2,9 @@ package org.evolution.algorithm.ga;
 
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.evolution.algorithm.OptimizeAlgorithm;
 import org.evolution.algorithm.exception.AlgorithmException;
 import org.evolution.algorithm.population.Population;
@@ -12,10 +15,15 @@ import org.evolution.function.cross.CrossFunction;
 import org.evolution.function.elitismus.ElitismusFunction;
 import org.evolution.function.mutate.MutateFunction;
 import org.evolution.function.select.SelectFunction;
+import org.evolution.model.ConfigurationModel;
 import org.evolution.solution.Solution;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public abstract class GeneticAlgorithm<T extends Solution> extends
-		OptimizeAlgorithm<T> {
+		OptimizeAlgorithm<T> implements ConfigurationModel {
+
+	public final static String XML_ENTITY = "genetic_algorithm";
 
 	/* EVOLUTION OPERATORS */
 	private SelectFunction<T> selectFunction;
@@ -154,5 +162,30 @@ public abstract class GeneticAlgorithm<T extends Solution> extends
 	public void setMutateFunction(MutateFunction<T> mutateFunction) {
 		this.mutateFunction = mutateFunction;
 		this.mutateFunction.setAlgorithm(this);
+	}
+
+	@Override
+	public Element createXML() {
+		Element root = super.createXML();
+		try {
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory
+					.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+			Document doc = docBuilder.newDocument();
+			Element rootElement = doc.createElement(XML_ENTITY);
+			rootElement.appendChild(doc.importNode(root, true));
+			doc.appendChild(rootElement);
+			return rootElement;
+		} catch (Exception exc) {
+			log.error("Create XML is failed");
+		}
+		return null;
+	}
+
+	@Override
+	public void loadXML(Element element) {
+		// TODO Auto-generated method stub
+
 	}
 }

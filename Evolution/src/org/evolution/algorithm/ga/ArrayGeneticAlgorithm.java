@@ -1,44 +1,43 @@
 package org.evolution.algorithm.ga;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.log4j.Logger;
-import org.evolution.model.ArrayGeneticAlgorithmModel;
-import org.evolution.model.ConfigurableAlgorithm;
+import org.evolution.model.ConfigurationModel;
 import org.evolution.solution.ArraySolution;
-
-import com.thoughtworks.xstream.XStream;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 @XmlRootElement
 public class ArrayGeneticAlgorithm extends GeneticAlgorithm<ArraySolution>
-		implements ConfigurableAlgorithm {
+		implements ConfigurationModel {
 
 	private Logger log = Logger.getLogger(getClass());
-	private ArrayGeneticAlgorithmModel model;
+	public final static String XML_ENTITY = "dimension_genetic_algorithm";
 
 	@Override
-	public void fromXML(File file) {
-		XStream stream = new XStream();
-		ArrayGeneticAlgorithm algorithm = (ArrayGeneticAlgorithm) stream
-				.fromXML(file);
+	public Element createXML() {
+		Element root = super.createXML();
+		try {
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory
+					.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+			Document doc = docBuilder.newDocument();
+			Element rootElement = doc.createElement(XML_ENTITY);
+			rootElement.appendChild(doc.importNode(root, true));
+			return rootElement;
+		} catch (Exception exc) {
+			log.error("Create XML is failed");
+		}
+		return null;
 	}
 
 	@Override
-	public void toXML(File file) throws FileNotFoundException {
-		ArrayGeneticAlgorithmModel model = new ArrayGeneticAlgorithmModel();
-		model.setCrossFunction(getCrossFunction());
-		model.setElitismuFunction(getElitismusFunction());
-		model.setMutateFunction(getMutateFunction());
-		model.setPopulation(getPopulation());
-		model.setSolutionSpace(getSolutionSpace());
+	public void loadXML(Element element) {
+		// TODO Auto-generated method stub
 
-		FileOutputStream fis = new FileOutputStream(file);
-		XStream stream = new XStream();
-		stream.toXML(model, fis);
 	}
-
 }

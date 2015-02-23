@@ -1,39 +1,51 @@
 package org.evolution.solution.space;
 
+import java.util.LinkedList;
 import java.util.Random;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.log4j.Logger;
 import org.evolution.algorithm.exception.SolutionSpaceException;
 import org.evolution.algorithm.util.Constants;
 import org.evolution.solution.ArraySolution;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public class MultidimensionalSpace extends SolutionSpace<ArraySolution> {
 	private Logger log = Logger.getLogger(getClass());
 	private Random random = new Random();
-	private Bounds[] bounds;
+	private LinkedList<Bounds> bounds = new LinkedList<>();
+	public final static String XML_ENTITY = "multidimensional_space";
 
-	public MultidimensionalSpace(int dimension) {
-		bounds = new Bounds[dimension];
-		for (int i = 0; i < dimension; i++) {
-			bounds[i] = new Bounds(this);
-		}
+	public MultidimensionalSpace() {
 	}
 
 	public int getDimension() {
-		return bounds.length;
+		return bounds.size();
 	}
 
-	public Bounds get(int index) {
-		return bounds[index];
+	public Bounds getBound(int index) {
+		return bounds.get(index);
 	}
 
 	public void setBounds(int index, Bounds bounds) {
-		this.bounds[index] = bounds;
+		this.bounds.set(index, bounds);
 	}
 
 	public Double getRandomValue(int dimensionIndex)
 			throws SolutionSpaceException {
-		return bounds[dimensionIndex].getRandomValue();
+		return bounds.get(dimensionIndex).getRandomValue();
+	}
+
+	public void addBound(double minVal, double maxVal)
+			throws SolutionSpaceException {
+		if (minVal > maxVal) {
+			throw new SolutionSpaceException(this,
+					"Max value of new dimension must be equal or greater then min value.");
+		}
+		bounds.add(new Bounds(this, minVal, maxVal));
 	}
 
 	@Override
@@ -41,7 +53,7 @@ public class MultidimensionalSpace extends SolutionSpace<ArraySolution> {
 		ArraySolution solution = new ArraySolution();
 		try {
 			for (int i = 0; i < getDimension(); i++) {
-				Bounds bound = get(i);
+				Bounds bound = getBound(i);
 				Double randomValue = bound.getRandomValue();
 				solution.setValue(i, randomValue);
 			}
@@ -99,5 +111,40 @@ public class MultidimensionalSpace extends SolutionSpace<ArraySolution> {
 		public String toString() {
 			return "Multidimensional space";
 		}
+	}
+
+	@Override
+	public Element createXML() {
+		Element root = super.createXML();
+		try {
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory
+					.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+			Document doc = docBuilder.newDocument();
+			Element rootElement = doc.createElement(XML_ENTITY);
+			rootElement.appendChild(doc.importNode(root, true));
+			Element boundsElement = doc.createElement("bounds");
+			rootElement.appendChild(boundsElement);
+			for (Bounds bound : bounds) {
+				Element boundElement = doc.createElement("bound");
+				boundElement
+						.setAttribute("min", bound.getMinValue().toString());
+				boundElement
+						.setAttribute("max", bound.getMaxValue().toString());
+				boundsElement.appendChild(boundElement);
+			}
+			doc.appendChild(rootElement);
+			return rootElement;
+		} catch (Exception exc) {
+			// log.error("Create XML is failed");
+		}
+		return null;
+	}
+
+	@Override
+	public void loadXML(Element element) {
+		// TODO Auto-generated method stub
+
 	}
 }

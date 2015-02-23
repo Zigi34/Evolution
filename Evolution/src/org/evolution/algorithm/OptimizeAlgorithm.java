@@ -4,15 +4,20 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.apache.log4j.Logger;
 import org.evolution.algorithm.exception.AlgorithmException;
 import org.evolution.algorithm.population.Population;
 import org.evolution.algorithm.state.OptimizeAlgorithmState;
 import org.evolution.algorithm.state.OptimizeAlgorithmStateListener;
 import org.evolution.algorithm.util.Constants;
-import org.evolution.model.ConfigurableAlgorithm;
+import org.evolution.model.ConfigurationModel;
 import org.evolution.solution.Solution;
 import org.evolution.solution.space.SolutionSpace;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * Basic class for all optimize algorithm.
@@ -24,11 +29,13 @@ import org.evolution.solution.space.SolutionSpace;
  */
 
 public abstract class OptimizeAlgorithm<T extends Solution> implements
-		Runnable, ConfigurableAlgorithm {
+		Runnable, ConfigurationModel {
 	protected Logger log = Logger.getLogger(getClass());
 
 	private int minPopulationSize = 2;
 	private int maxPopulationSize = 10000;
+
+	public final static String XML_ENTITY = "optimize_algorithm";
 
 	/**
 	 * space of solution
@@ -350,5 +357,30 @@ public abstract class OptimizeAlgorithm<T extends Solution> implements
 	public void stop() {
 		isRunning = false;
 		actualIteration = 0;
+	}
+
+	public Element createXML() {
+		try {
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory
+					.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+			Document doc = docBuilder.newDocument();
+			Element rootElement = doc.createElement(XML_ENTITY);
+			rootElement.appendChild(doc.importNode(solutionSpace.createXML(),
+					true));
+			rootElement
+					.appendChild(doc.importNode(population.createXML(), true));
+			doc.appendChild(rootElement);
+			return rootElement;
+		} catch (Exception exc) {
+			log.error("Create XML is failed");
+		}
+		return null;
+	}
+
+	public void loadXML(Element element) {
+		// TODO Auto-generated method stub
+
 	}
 }

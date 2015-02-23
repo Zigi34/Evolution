@@ -8,15 +8,24 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.apache.log4j.Logger;
 import org.evolution.algorithm.util.Constants;
 import org.evolution.function.objective.ObjectiveFunction;
+import org.evolution.model.ConfigurationModel;
 import org.evolution.solution.Solution;
 import org.evolution.solution.space.SolutionSpace;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
-public class Population<T extends Solution> implements Collection<T>, List<T> {
+public class Population<T extends Solution> implements Collection<T>, List<T>,
+		ConfigurationModel {
 	private Logger log = Logger.getLogger(getClass());
 	private List<T> values = new LinkedList<T>();
+
+	public final static String XML_ENTITY = "population";
 
 	public Population() {
 	}
@@ -177,5 +186,29 @@ public class Population<T extends Solution> implements Collection<T>, List<T> {
 	public boolean addAll(Collection<? extends T> c) {
 		values.addAll(c);
 		return true;
+	}
+
+	public Element createXML() {
+		try {
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory
+					.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+			Document doc = docBuilder.newDocument();
+			Element rootElement = doc.createElement(XML_ENTITY);
+			for (T value : values) {
+				rootElement
+						.appendChild(doc.importNode(value.createXML(), true));
+			}
+			doc.appendChild(rootElement);
+			return rootElement;
+		} catch (Exception exc) {
+			log.error("Create XML is failed");
+		}
+		return null;
+	}
+
+	public void loadXML(Element element) {
+		// TODO Auto-generated method stub
 	}
 }
