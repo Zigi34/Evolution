@@ -16,7 +16,7 @@ import org.evolution.algorithm.util.Constants;
 import org.evolution.function.objective.ObjectiveFunction;
 import org.evolution.model.ConfigurationModel;
 import org.evolution.solution.Solution;
-import org.evolution.solution.space.SolutionSpace;
+import org.evolution.solution.space.Space;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -57,7 +57,7 @@ public class Population<T extends Solution> implements Collection<T>, List<T>,
 		});
 	}
 
-	public void createRandomPopulation(int count, SolutionSpace<T> space) {
+	public void createRandomPopulation(int count, Space<T> space) {
 		for (int i = 0; i < count; i++) {
 			T solution = space.getRandomSolution();
 			if (solution != null)

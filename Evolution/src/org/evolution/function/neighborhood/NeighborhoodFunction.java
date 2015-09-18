@@ -3,17 +3,17 @@ package org.evolution.function.neighborhood;
 import java.util.Random;
 
 import org.evolution.solution.Solution;
-import org.evolution.solution.space.SolutionSpace;
+import org.evolution.solution.space.Space;
 
 public abstract class NeighborhoodFunction<T extends Solution> {
-	private SolutionSpace<T> solutionSpace;
+	private Space<T> solutionSpace;
 	protected static Random random = new Random();
 
-	public NeighborhoodFunction(SolutionSpace<T> solutionSpace) {
+	public NeighborhoodFunction(Space<T> solutionSpace) {
 		this.solutionSpace = solutionSpace;
 	}
 
-	protected SolutionSpace<T> getSolutionSpace() {
+	protected Space<T> getSolutionSpace() {
 		return solutionSpace;
 	}
 

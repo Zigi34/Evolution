@@ -13,11 +13,9 @@ import org.evolution.solution.space.restriction.RestrictiveCondition;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public abstract class SolutionSpace<T extends Solution> implements
-		ConfigurationModel {
+public abstract class Space<T extends Solution> implements ConfigurationModel {
 	private List<RestrictiveCondition<T>> restrictives = new LinkedList<RestrictiveCondition<T>>();
 	private boolean isHardRestricted = true;
-	private T solutionPattern;
 	private ObjectiveFunction<T> objectiveFunction;
 
 	public final static String XML_ENTITY = "solution_space";
@@ -40,14 +38,12 @@ public abstract class SolutionSpace<T extends Solution> implements
 		return restrictives;
 	}
 
-	public T getSolutionPattern() {
-		return solutionPattern;
-	}
-
-	public void setSolutionPattern(T solutionPattern) {
-		this.solutionPattern = solutionPattern;
-	}
-
+	/*
+	 * public T getSolutionPattern() { return solutionPattern; }
+	 * 
+	 * public void setSolutionPattern(T solutionPattern) { this.solutionPattern
+	 * = solutionPattern; }
+	 */
 	public abstract T getRandomSolution();
 
 	public abstract int getDimension();
@@ -70,6 +66,7 @@ public abstract class SolutionSpace<T extends Solution> implements
 
 	public void setObjectiveFunction(ObjectiveFunction<T> objectiveFunction) {
 		this.objectiveFunction = objectiveFunction;
+		objectiveFunction.setSolutionSpace(this);
 	}
 
 	@Override

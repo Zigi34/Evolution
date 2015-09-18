@@ -5,9 +5,10 @@ import java.util.List;
 import java.util.Random;
 
 import org.evolution.solution.Solution;
-import org.evolution.solution.space.SolutionSpace;
+import org.evolution.solution.space.Space;
 
-public class GeneticMuateFunction<T extends Solution> extends MutateFunction<T> {
+public class GeneticMutateFunction<T extends Solution> extends
+		MutateFunction<T> {
 
 	public static final double minMutate = 0.0;
 	public static final double maxMutate = 0.8;
@@ -15,13 +16,11 @@ public class GeneticMuateFunction<T extends Solution> extends MutateFunction<T> 
 	private static Random random = new Random();
 
 	@Override
-	public List<T> mutate(List<T> mutatedSolutions,
-			SolutionSpace<T> solutionSpace) {
+	public List<T> mutate(List<T> mutatedSolutions, Space<T> solutionSpace) {
 		List<T> result = new LinkedList<T>();
 		for (int i = 0; i < mutatedSolutions.size(); i++) {
 			T solution = mutatedSolutions.get(i);
-			T randomSolution = getAlgorithm().getSolutionSpace()
-					.getRandomSolution();
+			T randomSolution = solutionSpace.getRandomSolution();
 			for (int parameterIndex = 0; parameterIndex < solution.size(); parameterIndex++) {
 				if (random.nextDouble() <= mutatedProbability) {
 					solution.set(randomSolution.get(parameterIndex),

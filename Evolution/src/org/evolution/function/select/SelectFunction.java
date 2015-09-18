@@ -11,6 +11,8 @@ public abstract class SelectFunction<T extends Solution> {
 
 	public abstract List<T> select(List<T> population);
 
+	public abstract List<T> select(List<T> population, int count);
+
 	public OptimizeAlgorithm<T> getAlgorithm() {
 		return algorithm;
 	}

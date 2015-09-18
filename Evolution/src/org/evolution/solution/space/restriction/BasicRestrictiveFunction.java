@@ -3,20 +3,22 @@ package org.evolution.solution.space.restriction;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.evolution.solution.ArraySolution;
+import org.evolution.solution.NumericSolution;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class BasicRestrictiveFunction extends
-		RestrictiveCondition<ArraySolution> {
+		RestrictiveCondition<NumericSolution> {
 
 	public final static String XML_ENTITY = "conditions";
 
 	@Override
-	public boolean isIncluded(ArraySolution solution) {
-		for (int i = 0; i < solution.size(); i++)
-			if (solution.get(i) < 0)
-				return true;
+	public boolean isIncluded(NumericSolution solution) {
+		for (int i = 0; i < solution.size(); i++) {
+			if (solution.get(0).getClass().equals(Integer.class))
+				if (solution.get(i).intValue() < 0)
+					return true;
+		}
 		return false;
 	}
 

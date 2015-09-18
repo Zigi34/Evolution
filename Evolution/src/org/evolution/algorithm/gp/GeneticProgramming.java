@@ -1,50 +1,51 @@
-package org.evolution.algorithm.ga;
+package org.evolution.algorithm.gp;
 
 import java.util.List;
+import java.util.Random;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.evolution.algorithm.OptimizeAlgorithm;
 import org.evolution.algorithm.exception.AlgorithmException;
+import org.evolution.algorithm.gp.types.Expression;
 import org.evolution.algorithm.population.Population;
 import org.evolution.algorithm.state.GeneticAlgorithmState;
 import org.evolution.algorithm.state.OptimizeAlgorithmState;
 import org.evolution.algorithm.util.Constants;
 import org.evolution.function.cross.CrossFunction;
-import org.evolution.function.elitismus.ElitismusFunction;
 import org.evolution.function.mutate.MutateFunction;
 import org.evolution.function.select.SelectFunction;
 import org.evolution.model.ConfigurationModel;
-import org.evolution.solution.Solution;
+import org.evolution.solution.TreeSolution;
 import org.evolution.solution.space.Space;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public abstract class GeneticAlgorithm<T extends Solution> extends
-		OptimizeAlgorithm<T> implements ConfigurationModel {
+public abstract class GeneticProgramming<T extends Expression> extends
+		OptimizeAlgorithm<TreeSolution<T>> implements ConfigurationModel {
 
-	public final static String XML_ENTITY = "genetic_algorithm";
+	public final static String XML_ENTITY = "genetic_programming";
 
 	/* EVOLUTION OPERATORS */
-	private SelectFunction<T> selectFunction;
-	private CrossFunction<T> crossFunction;
-	private ElitismusFunction<T> elitismusFunction;
-	private MutateFunction<T> mutateFunction;
-	private Space<T> solutionSpace;
+	private SelectFunction<TreeSolution<T>> selectFunction;
+	private CrossFunction<TreeSolution<T>> crossFunction;
+	private MutateFunction<TreeSolution<T>> mutateFunction;
+	private Space<TreeSolution<T>> solutionSpace;
 
-	private boolean isParentInPopulation = true;
+	private double crossProbability = 0.75;
+	private Random random = new Random();
 
 	/**
 	 * Konstruktor
 	 */
-	public GeneticAlgorithm() {
+	public GeneticProgramming() {
 		super();
 	}
 
 	@Override
 	public String toString() {
-		return "Genetic algorithm";
+		return "Genetic programming";
 	}
 
 	@Override
@@ -53,23 +54,23 @@ public abstract class GeneticAlgorithm<T extends Solution> extends
 		if (getSelectFunction() == null)
 			throw new AlgorithmException(
 					Constants.ERROR_SELECT_FUNCTION_NOT_SET,
-					new OptimizeAlgorithmState<T>(this,
+					new OptimizeAlgorithmState<TreeSolution<T>>(this,
 							OptimizeAlgorithmState.INITIALIZE));
 		if (getMutateFunction() == null)
 			throw new AlgorithmException(
 					Constants.ERROR_MUTATE_FUNCTION_NOT_SET,
-					new OptimizeAlgorithmState<T>(this,
+					new OptimizeAlgorithmState<TreeSolution<T>>(this,
 							OptimizeAlgorithmState.INITIALIZE));
 		if (getCrossFunction() == null)
 			throw new AlgorithmException(
 					Constants.ERROR_CROSS_FUNCTION_NOT_SET,
-					new OptimizeAlgorithmState<T>(this,
+					new OptimizeAlgorithmState<TreeSolution<T>>(this,
 							OptimizeAlgorithmState.INITIALIZE));
-		if (getElitismusFunction() == null)
-			throw new AlgorithmException(
-					Constants.ERROR_ELITISMUS_FUNCTION_NOT_SET,
-					new OptimizeAlgorithmState<T>(this,
-							OptimizeAlgorithmState.INITIALIZE));
+		/*
+		 * if (getElitismusFunction() == null) throw new AlgorithmException(
+		 * Constants.ERROR_ELITISMUS_FUNCTION_NOT_SET, new
+		 * OptimizeAlgorithmState<T>(this, OptimizeAlgorithmState.INITIALIZE));
+		 */
 	}
 
 	public void run() {
@@ -85,34 +86,42 @@ public abstract class GeneticAlgorithm<T extends Solution> extends
 			// calculate algorithm cycle, while reaching maximum iteration
 			while (getActualIteration() < getMaxIteration() && isRunning()) {
 
-				Population<T> newPopulation = new Population<T>();
-				// SELECTION
-				fireStateListener(GeneticAlgorithmState.SELECT_START);
-				List<T> parentSolutions = getSelectFunction().select(
-						getPopulation());
-				if (isParentInPopulation)
-					newPopulation.addAll(parentSolutions);
-				fireStateListener(GeneticAlgorithmState.SELECT_END);
+				List<TreeSolution<T>> potomci = null;
+				Population<TreeSolution<T>> newPopulation = new Population<TreeSolution<T>>();
+				while (newPopulation.size() < getPopulation().size()) {
+					if (random.nextDouble() < crossProbability) {
+						// SELECTION
+						fireStateListener(GeneticAlgorithmState.SELECT_START);
+						List<TreeSolution<T>> parentSolutions = getSelectFunction()
+								.select(getPopulation(), 2);
+						fireStateListener(GeneticAlgorithmState.SELECT_END);
 
-				// CROSS OVER
-				fireStateListener(GeneticAlgorithmState.CROSS_START);
-				List<T> potomci = getCrossFunction().cross(parentSolutions);
-				newPopulation.addAll(potomci);
-				fireStateListener(GeneticAlgorithmState.CROSS_END);
+						// CROSS OVER
+						fireStateListener(GeneticAlgorithmState.CROSS_START);
+						potomci = getCrossFunction().cross(parentSolutions);
+						newPopulation.addAll(potomci);
+						fireStateListener(GeneticAlgorithmState.CROSS_END);
+					} else {
+						// SELECTION
+						fireStateListener(GeneticAlgorithmState.SELECT_START);
+						List<TreeSolution<T>> parentSolutions = getSelectFunction()
+								.select(getPopulation(), 2);
+						fireStateListener(GeneticAlgorithmState.SELECT_END);
 
-				// MUTATION
-				fireStateListener(GeneticAlgorithmState.MUTATE_START);
-				potomci = getMutateFunction().mutate(potomci,
-						getSolutionSpace());
-				fireStateListener(GeneticAlgorithmState.MUTATE_END);
+						// MUTATION
+						fireStateListener(GeneticAlgorithmState.MUTATE_START);
+						potomci = getMutateFunction().mutate(parentSolutions,
+								getSolutionSpace());
+						fireStateListener(GeneticAlgorithmState.MUTATE_END);
+					}
+					newPopulation.addAll(potomci);
+				}
 
-				fireStateListener(GeneticAlgorithmState.ELITISMUS_END);
-				List<T> elitismusSolutions = getElitismusFunction().elitismus(
-						newPopulation);
-				fireStateListener(GeneticAlgorithmState.ELITISMUS_END);
+				if (newPopulation.size() > getPopulation().size())
+					newPopulation.remove(0);
 
 				getPopulation().clear();
-				getPopulation().addAll(elitismusSolutions);
+				getPopulation().addAll(newPopulation);
 				fireStateListener(GeneticAlgorithmState.NEW_POPULATION_CREATED);
 
 				// sort solutions from best to worst
@@ -131,37 +140,36 @@ public abstract class GeneticAlgorithm<T extends Solution> extends
 		}
 	}
 
-	public CrossFunction<T> getCrossFunction() {
+	public CrossFunction<TreeSolution<T>> getCrossFunction() {
 		return crossFunction;
 	}
 
-	public void setCrossFunction(CrossFunction<T> crossFunction) {
+	public void setCrossFunction(CrossFunction<TreeSolution<T>> crossFunction) {
 		this.crossFunction = crossFunction;
 	}
 
-	public ElitismusFunction<T> getElitismusFunction() {
-		return elitismusFunction;
-	}
-
-	public void setElitismusFunction(ElitismusFunction<T> elitismusFunction) {
-		this.elitismusFunction = elitismusFunction;
-		this.elitismusFunction.setAlgorithm(this);
-	}
-
-	public SelectFunction<T> getSelectFunction() {
+	/*
+	 * public ElitismusFunction<T> getElitismusFunction() { return
+	 * elitismusFunction; }
+	 * 
+	 * public void setElitismusFunction(ElitismusFunction<T> elitismusFunction)
+	 * { this.elitismusFunction = elitismusFunction;
+	 * this.elitismusFunction.setAlgorithm(this); }
+	 */
+	public SelectFunction<TreeSolution<T>> getSelectFunction() {
 		return selectFunction;
 	}
 
-	public void setSelectFunction(SelectFunction<T> selectFunction) {
+	public void setSelectFunction(SelectFunction<TreeSolution<T>> selectFunction) {
 		this.selectFunction = selectFunction;
 		this.selectFunction.setAlgorithm(this);
 	}
 
-	public MutateFunction<T> getMutateFunction() {
+	public MutateFunction<TreeSolution<T>> getMutateFunction() {
 		return mutateFunction;
 	}
 
-	public void setMutateFunction(MutateFunction<T> mutateFunction) {
+	public void setMutateFunction(MutateFunction<TreeSolution<T>> mutateFunction) {
 		this.mutateFunction = mutateFunction;
 	}
 
@@ -190,11 +198,11 @@ public abstract class GeneticAlgorithm<T extends Solution> extends
 
 	}
 
-	public Space<T> getSolutionSpace() {
+	public Space<TreeSolution<T>> getSolutionSpace() {
 		return solutionSpace;
 	}
 
-	public void setSolutionSpace(Space<T> solutionSpace) {
+	public void setSolutionSpace(Space<TreeSolution<T>> solutionSpace) {
 		this.solutionSpace = solutionSpace;
 	}
 }

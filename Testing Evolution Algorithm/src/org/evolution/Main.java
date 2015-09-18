@@ -1,38 +1,30 @@
 package org.evolution;
 
-import java.io.File;
 import java.util.Hashtable;
 
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import org.evolution.algorithm.exception.SolutionSpaceException;
-import org.evolution.algorithm.ga.ArrayGeneticAlgorithm;
-import org.evolution.algorithm.ga.GeneticAlgorithm;
+import org.evolution.algorithm.gp.FunctionGeneticProgramming;
+import org.evolution.algorithm.gp.GeneticProgramming;
+import org.evolution.algorithm.gp.types.Constant;
+import org.evolution.algorithm.gp.types.Expression;
+import org.evolution.algorithm.gp.types.KratFce;
+import org.evolution.algorithm.gp.types.NumericExpression;
+import org.evolution.algorithm.gp.types.PlusFce;
+import org.evolution.algorithm.gp.types.SinFce;
+import org.evolution.algorithm.gp.types.VarExpr;
 import org.evolution.algorithm.population.Population;
 import org.evolution.algorithm.state.GeneticAlgorithmState;
 import org.evolution.algorithm.state.OptimizeAlgorithmState;
 import org.evolution.algorithm.state.OptimizeAlgorithmStateListener;
-import org.evolution.algorithm.util.XMLManager;
-import org.evolution.function.cross.CrossFunction;
-import org.evolution.function.cross.GeneticCrossFunction;
-import org.evolution.function.elitismus.ElitismusFunction;
-import org.evolution.function.elitismus.GeneralElitismusFunction;
-import org.evolution.function.mutate.GeneticMuateFunction;
-import org.evolution.function.objective.DeJong1;
-import org.evolution.function.objective.ObjectiveFunction;
-import org.evolution.function.select.ArrayRouletteWheelSelect;
-import org.evolution.function.select.SelectFunction;
-import org.evolution.solution.ArraySolution;
-import org.evolution.solution.space.MultidimensionalSpace;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.evolution.function.cross.StructureCrossFunction;
+import org.evolution.function.mutate.StructureMutation;
+import org.evolution.function.objective.ApproximateFunctionProblem;
+import org.evolution.function.select.FunctionRouleteWheelSelect;
+import org.evolution.solution.SExpressionSolution;
+import org.evolution.solution.space.StructureSpace;
 
 public class Main {
 
-	private GeneticAlgorithm<ArraySolution> algorithm = new ArrayGeneticAlgorithm();
+	private GeneticProgramming<NumericExpression> algorithm = new FunctionGeneticProgramming();
 
 	public static void main(String[] args) {
 		Main start = new Main();
@@ -41,47 +33,56 @@ public class Main {
 
 	public void startGeneticAlgorithm() {
 		// Cross function
-		CrossFunction<ArraySolution> crossFce = new GeneticCrossFunction<ArraySolution>();
+		StructureCrossFunction<NumericExpression> crossFce = new StructureCrossFunction<NumericExpression>();
 		// crossFce.setCrossProbability(0.8);
 		algorithm.setCrossFunction(crossFce);
 
 		// Mutate function
-		GeneticMuateFunction<ArraySolution> mutateFce = new GeneticMuateFunction<ArraySolution>();
+		StructureMutation<NumericExpression> mutateFce = new StructureMutation<NumericExpression>();
 		// mutateFce.setMutatedProbability(0.05);
 		algorithm.setMutateFunction(mutateFce);
 
 		// Select function
-		SelectFunction<ArraySolution> selectFce = new ArrayRouletteWheelSelect();
+		FunctionRouleteWheelSelect selectFce = new FunctionRouleteWheelSelect();
 		algorithm.setSelectFunction(selectFce);
 
-		// Elitismus
-		ElitismusFunction<ArraySolution> elitismusFce = new GeneralElitismusFunction<ArraySolution>();
-		algorithm.setElitismusFunction(elitismusFce);
-
 		// Solution Space
-		ObjectiveFunction<ArraySolution> objectiveFce = new DeJong1<ArraySolution>();
+		ApproximateFunctionProblem objectiveFce = new ApproximateFunctionProblem(
+				solutionSpace);
+		SExpressionSolution function = new SExpressionSolution(3);
+		Expression root = new KratFce();
+		Expression sin = new SinFce();
+		Expression plus = new PlusFce();
+		Constant deset = new Constant(10.0);
+		VarExpr x = new VarExpr("x");
+		x.setMinValue(-2.0);
+		x.setMaxValue(1.0);
+		VarExpr y = new VarExpr("y");
+		y.setMinValue(-2.0);
+		y.setMaxValue(5.0);
+		sin.add(x);
+		plus.add(deset);
+		plus.add(sin);
+		root.add(y);
+		root.add(plus);
+		function.setRoot(root);
+		objectiveFce.setFunction(function);
 
-		MultidimensionalSpace solutionSpace = new MultidimensionalSpace();
-		try {
-			solutionSpace.addBound(-4, 4);
-			solutionSpace.addBound(-4, 4);
-		} catch (SolutionSpaceException e) {
-			e.printStackTrace();
-		}
+		StructureSpace solutionSpace = new StructureSpace();
+
 		solutionSpace.setObjectiveFunction(objectiveFce);
 		algorithm.setSolutionSpace(solutionSpace);
 
 		// Population
-		Population<ArraySolution> population = new Population<ArraySolution>();
-		population.createRandomPopulation(20, solutionSpace);
+		Population<SExpressionSolution> population = new Population<SExpressionSolution>();
+		population.createRandomPopulation(10, solutionSpace);
 		algorithm.setPopulation(population);
 
-		algorithm.setMaxIteration(2);
-
+		algorithm.setMaxIteration(200);
 		algorithm
-				.addStateListener(new OptimizeAlgorithmStateListener<ArraySolution>() {
+				.addStateListener(new OptimizeAlgorithmStateListener<SExpressionSolution>() {
 					public void handleStateChanged(
-							OptimizeAlgorithmState<ArraySolution> eventCode) {
+							OptimizeAlgorithmState<SExpressionSolution> eventCode) {
 						if (eventCode.getState() == OptimizeAlgorithmState.STARTED) {
 							System.out.println("START [POPULACE = "
 									+ eventCode.getAlgorithm().getPopulation()
@@ -123,25 +124,21 @@ public class Main {
 					}
 				});
 
-		// algorithm.start();
-		try {
-			Document doc = XMLManager.createDocument();
-			Element elem = algorithm.createXML();
-			Element root = doc.createElement("config");
-			root.appendChild(doc.importNode(elem, true));
-			doc.appendChild(root);
-			TransformerFactory transformerFactory = TransformerFactory
-					.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File("file.xml"));
-
-			transformer.transform(source, result);
-
-			System.out.println("File saved!");
-			System.out.println(elem);
-		} catch (Exception exc) {
-			exc.printStackTrace();
-		}
+		algorithm.start();
+		/*
+		 * try { Document doc = XMLManager.createDocument(); Element elem =
+		 * algorithm.createXML(); Element root = doc.createElement("config");
+		 * root.appendChild(doc.importNode(elem, true)); doc.appendChild(root);
+		 * TransformerFactory transformerFactory = TransformerFactory
+		 * .newInstance(); Transformer transformer =
+		 * transformerFactory.newTransformer(); DOMSource source = new
+		 * DOMSource(doc); StreamResult result = new StreamResult(new
+		 * File("file.xml"));
+		 * 
+		 * transformer.transform(source, result);
+		 * 
+		 * System.out.println("File saved!"); System.out.println(elem); } catch
+		 * (Exception exc) { exc.printStackTrace(); }
+		 */
 	}
 }

@@ -2,15 +2,17 @@ package org.evolution.solution;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.evolution.algorithm.util.XMLManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class ArraySolution extends Solution {
+public abstract class ArraySolution<T> extends Solution {
 	private Logger log = Logger.getLogger(getClass());
-	private Double[] values;
+	private ArrayList<T> values;
 	private NumberFormat formatter = new DecimalFormat("#0.000");
 
 	public final static String XML_ELEMENT = "multidim_solution";
@@ -20,48 +22,40 @@ public class ArraySolution extends Solution {
 	}
 
 	public ArraySolution(int dimension) {
-		values = new Double[dimension];
+		values = new ArrayList<T>(dimension);
 	}
 
-	public ArraySolution(ArraySolution solution) {
+	public ArraySolution(ArraySolution<T> solution) {
 		this(solution.size());
 		for (int index = 0; index < size(); index++)
-			values[index] = solution.get(index);
+			values.add(solution.get(index));
 	}
 
-	public void setValue(int dimensionIndex, Double value) {
-		values[dimensionIndex] = value;
+	public void setValue(int dimensionIndex, T value) {
+		values.set(dimensionIndex, value);
 	}
 
-	public Double get(int index) {
-		return values[index];
+	public T get(int index) {
+		return values.get(index);
 	}
 
-	protected Double[] getValues() {
+	protected List<T> getValues() {
 		return values;
 	}
 
 	public int size() {
-		return values.length;
+		return values.size();
 	}
 
-	@Override
-	public Solution createCopy() {
-		return new ArraySolution(this);
-	}
+	public abstract Solution createCopy();
 
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < size() - 1; i++)
-			builder.append(formatter.format(values[i]) + ", ");
-		builder.append(formatter.format(values[size() - 1]));
+			builder.append(formatter.format(values.get(i)) + ", ");
+		builder.append(formatter.format(values.get(size() - 1)));
 		return builder.toString();
-	}
-
-	@Override
-	public void set(Object value, int index) {
-		values[index] = (Double) value;
 	}
 
 	public Element createXML() {
@@ -74,9 +68,14 @@ public class ArraySolution extends Solution {
 			rootElement.appendChild(el);
 			Element valuesElement = doc.createElement("parameters");
 			el.appendChild(valuesElement);
-			for (Double value : values) {
+			for (T value : values) {
 				Element valueElement = doc.createElement("parameter");
-				valueElement.setAttribute("value", value.toString());
+				if (value.getClass() == Double.class)
+					valueElement.setAttribute("value", String.valueOf(value));
+				else if (value.getClass() == Integer.class)
+					valueElement.setAttribute("value", String.valueOf(value));
+				else if (value.getClass() == Byte.class)
+					valueElement.setAttribute("value", String.valueOf(value));
 				valuesElement.appendChild(valueElement);
 			}
 			doc.appendChild(rootElement);

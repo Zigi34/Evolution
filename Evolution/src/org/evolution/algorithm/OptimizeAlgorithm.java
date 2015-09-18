@@ -15,7 +15,6 @@ import org.evolution.algorithm.state.OptimizeAlgorithmStateListener;
 import org.evolution.algorithm.util.Constants;
 import org.evolution.model.ConfigurationModel;
 import org.evolution.solution.Solution;
-import org.evolution.solution.space.SolutionSpace;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -37,10 +36,6 @@ public abstract class OptimizeAlgorithm<T extends Solution> implements
 
 	public final static String XML_ENTITY = "optimize_algorithm";
 
-	/**
-	 * space of solution
-	 */
-	private SolutionSpace<T> solutionSpace;
 	/**
 	 * states of algorithm
 	 */
@@ -79,18 +74,6 @@ public abstract class OptimizeAlgorithm<T extends Solution> implements
 	private Thread thread;
 	private boolean isRunning = true;
 
-	/**
-	 * create optimize algorithm
-	 * 
-	 * @param objectiveFunction
-	 *            objective function for solution type
-	 * @param solutionSpace
-	 *            solution space for solution type
-	 */
-	public OptimizeAlgorithm(SolutionSpace<T> solutionSpace) {
-		this.solutionSpace = solutionSpace;
-	}
-
 	public OptimizeAlgorithm() {
 
 	}
@@ -108,11 +91,6 @@ public abstract class OptimizeAlgorithm<T extends Solution> implements
 		if (getPopulation().size() > getMaxPopulationSize())
 			throw new AlgorithmException(String.format(
 					Constants.ERROR_POPULATION_TOO_BIG, maxPopulationSize),
-					new OptimizeAlgorithmState<T>(this,
-							OptimizeAlgorithmState.INITIALIZE));
-		if (getSolutionSpace() == null)
-			throw new AlgorithmException(
-					Constants.ERROR_SOLUTION_SPACE_NOT_SET,
 					new OptimizeAlgorithmState<T>(this,
 							OptimizeAlgorithmState.INITIALIZE));
 	}
@@ -189,14 +167,6 @@ public abstract class OptimizeAlgorithm<T extends Solution> implements
 		return actualIteration;
 	}
 
-	public SolutionSpace<T> getSolutionSpace() {
-		return solutionSpace;
-	}
-
-	public void setSolutionSpace(SolutionSpace<T> solutionSpace) {
-		this.solutionSpace = solutionSpace;
-	}
-
 	public int getMaxIteration() {
 		return maxIteration;
 	}
@@ -215,7 +185,7 @@ public abstract class OptimizeAlgorithm<T extends Solution> implements
 	 * 
 	 * @return
 	 */
-	public Solution getInitialSolution() {
+	public T getInitialSolution() {
 		return initialSolution;
 	}
 
@@ -367,8 +337,7 @@ public abstract class OptimizeAlgorithm<T extends Solution> implements
 
 			Document doc = docBuilder.newDocument();
 			Element rootElement = doc.createElement(XML_ENTITY);
-			rootElement.appendChild(doc.importNode(solutionSpace.createXML(),
-					true));
+			// rootElement.appendChild(doc.importNode(solutionSpace.createXML(),true));
 			rootElement
 					.appendChild(doc.importNode(population.createXML(), true));
 			doc.appendChild(rootElement);

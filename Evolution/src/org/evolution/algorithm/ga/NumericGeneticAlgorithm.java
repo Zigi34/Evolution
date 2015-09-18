@@ -11,7 +11,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 @XmlRootElement
-public class ArrayGeneticAlgorithm extends GeneticAlgorithm<ArraySolution>
+public class NumericGeneticAlgorithm extends GeneticAlgorithm<ArraySolution>
 		implements ConfigurationModel {
 
 	private Logger log = Logger.getLogger(getClass());
